@@ -1,0 +1,19 @@
+/** Article **/
+/* Ref: https://nexmoe.github.io/nexmoe.css */
+article {
+    padding: 2rem;
+}
+
+/** Minor Tweaks **/
+code {
+    font-size: 1em;
+    font-kerning: none;
+}
+
+/** Table Tweaks **/
+tr {
+    background: none !important;
+}
+tr:hover {
+    background-color: var(--color-hover) !important;
+}
