@@ -30,7 +30,7 @@
     // TODO: Localization?
 
     const messages = {
-        "wfc-title": "The great fire in Hong Kong",
+        "wfc-title": "The Wang Fuk Court fire",
         "wfc-body-text": `<p>
             On 26 November 2025, a large fire broke out at the Wang Fuk Court 
             apartment complex in Hong Kong and burned for two days. 168 lives 
@@ -38,10 +38,21 @@
             and expanded polystyrene foam boards accelerated the spread of the 
             fire, and multiple opportunities to prevent the fire have been 
             missed due to governmental oversight. 
+        </p>
+        <p>
+            The calamity, as well as all the losses of lives and suffers, shall 
+            not be forgotten.
         </p>`,
         "wfc-learn-more-text": "Learn more...",
         "wfc-learn-more-link": "https://en.wikipedia.org/wiki/Wang_Fuk_Court_fire",
-        "wfc-background-image": "https://upload.wikimedia.org/wikipedia/commons/d/df/Buildings_of_Taipo_apartment_fires.jpg",
+        // "wfc-background-image": "https://upload.wikimedia.org/wikipedia/commons/d/df/Buildings_of_Taipo_apartment_fires.jpg",
+        "wfc-background-image": "https://static.1f616emo.xyz/wfc-message-background.jpg",
+        "wfc-background-attribution": `
+            Background: 
+            <a href="https://commons.wikimedia.org/wiki/File:Buildings_of_Taipo_apartment_fires.jpg">am730</a>, 
+            <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>, via Wikimedia Commons
+        `,
+        "wfc-exit-label": "Click to close the dialog",
     }
 
     // Check if we have shown the message to the user in this month
@@ -81,6 +92,8 @@
         #wfc-overlay-box {
             /* Positioning */
             /* https://www.w3schools.com/howto/howto_js_fullscreen_overlay.asp */
+            max-width: 100%;
+            max-height: 100%;
             height: 100%;
             width: 100%;
             position: fixed;
@@ -95,7 +108,8 @@
             background-color: #000000;
         }
 
-        #wfc-overlay-box.fadeout {
+        #wfc-overlay-box.fadeout,
+        #wfc-overlay-box[open].fadeout::backdrop {
             pointer-events: none;
             animation: wfc-fadeout 0.6s linear forwards;
         }
@@ -126,6 +140,8 @@
             font-size: 300%;
             font-weight: bold;
             animation: wfc-general-slideup 2s cubic-bezier(0,0,.06,1) forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
         }
 
         #wfc-body-text {
@@ -135,6 +151,8 @@
             max-width: 720px;
             text-shadow: 0.5px 0.5px 0.7px black, 0 0 1em red, 0 0 0.2em red;
             animation: wfc-general-slideup 2s cubic-bezier(0,0,.32,.99) forwards;
+            animation-delay: 0.6s;
+            opacity: 0;
         }
 
         #wfc-learn-more {
@@ -143,24 +161,43 @@
             margin-right: 10%;
             max-width: 720px;
             text-align: right;
-            animation: wfc-general-slideup 2s cubic-bezier(0,0,.32,.99) forwards;
+            text-shadow: 0.5px 0.5px 0.7px black, 0 0 1em red, 0 0 0.2em red;
+            animation: wfc-general-slideup 1.8s cubic-bezier(0,0,.32,.99) forwards;
+            animation-delay: 0.8s;
+            opacity: 0;
         }
 
-        #wfc-learn-more a {
-            color: #eeeeff;
-            text-decoration-line: underline;
+        #wfc-background-attribution {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            margin: 5%;
+            font-color: #ccc;
+            font-size: small;
+            animation: wfc-fadein 0.3s linear forwards;
+            animation-delay: 3s;
+            opacity: 0;
         }
 
         #wfc-exit {
             position: absolute;
             top: 0;
             right: 0;
+            animation: wfc-fadein 0.15s linear forwards;
+            animation-delay: 3s;
+            opacity: 0;
+            background: none;
         }
 
         #wfc-exit svg {
-            width: 7vh;
+            width: 5vh;
             /* white */
             filter: invert(100%) sepia(95%) saturate(22%) hue-rotate(357deg) brightness(104%) contrast(107%);
+        }
+
+        #wfc-overlay-box a {
+            color: inherit;
+            text-decoration-line: underline;
         }
 
         @keyframes wfc-background-image-slideup {
@@ -181,7 +218,17 @@
                 opacity: 1;
             }
             to {
+                opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        @keyframes wfc-fadein {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
             }
         }
 
@@ -201,9 +248,12 @@
     document.body.style.overflow = "hidden";
 
     // Create the main box
-    const e_overlay_box = document.createElement('div');
+    const e_overlay_box = document.createElement('dialog');
     e_overlay_box.setAttribute('id', 'wfc-overlay-box');
+    e_overlay_box.setAttribute('tabindex', '-1');
+    e_overlay_box.setAttribute('aria-label', messages["wfc-title"]);
     document.body.appendChild(e_overlay_box);
+    e_overlay_box.showModal();
 
     // Wait for the image to load
     // https://stackoverflow.com/a/56341485/12805899, <https://creativecommons.org/licenses/by-sa/4.0/>
@@ -212,6 +262,7 @@
         img.onload = resolve;
         img.src = messages["wfc-background-image"];
     });
+    const start = Date.now();
 
     // Insert background image
     const e_background_image = document.createElement('div');
@@ -222,13 +273,13 @@
     const e_title = document.createElement('div');
     e_title.setAttribute('id', 'wfc-title');
     e_title.textContent = messages["wfc-title"];
-    setTimeout(() => e_overlay_box.appendChild(e_title), 200);
+    e_overlay_box.appendChild(e_title);
 
     // Body text and Learn More
     const e_body_text = document.createElement('div');
     e_body_text.setAttribute('id', 'wfc-body-text');
     e_body_text.innerHTML = messages["wfc-body-text"];
-    setTimeout(() => e_overlay_box.appendChild(e_body_text), 600);
+    e_overlay_box.appendChild(e_body_text);
 
     // Learn More
     const e_learn_more = document.createElement('div');
@@ -238,19 +289,29 @@
     e_learn_more_a.setAttribute('target', '_blank');
     e_learn_more_a.textContent = messages["wfc-learn-more-text"];
     e_learn_more.appendChild(e_learn_more_a)
-    setTimeout(() => e_overlay_box.appendChild(e_learn_more), 800);
+    e_overlay_box.appendChild(e_learn_more);
+
+    // Attribution
+    const e_attribution = document.createElement('footer');
+    e_attribution.setAttribute('id', 'wfc-background-attribution');
+    e_attribution.innerHTML = messages['wfc-background-attribution'];
+    e_overlay_box.appendChild(e_attribution);
 
     // Exit button
-    const e_exit = document.createElement('div');
+    const e_exit = document.createElement('button');
     e_exit.setAttribute('id', 'wfc-exit');
-    e_exit.setAttribute('aria-lavel', 'Exit');
+    e_exit.setAttribute('aria-label', messages["wfc-exit-label"]);
     e_exit.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+        >
         <!--
             !Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com 
             License - https://fontawesome.com/license/free 
             Copyright 2026 Fonticons, Inc.
         -->
+        <title>${messages["wfc-exit-label"]}</title>
         <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 
         125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 
         137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 
@@ -259,27 +320,34 @@
         137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/>
         </svg>
     `;
-    setTimeout(() => {
-        let exited = false;
+    e_overlay_box.appendChild(e_exit);
 
-        e_exit.addEventListener("click", () => {
-            exited = true;
-            e_overlay_box.classList.add('fadeout');
-            document.body.style.overflow = old_body_overflow;
-            setTimeout(() => e_overlay_box.remove(), 1000);
+    const cancelListener = (e) => {
+        e.preventDefault();
+
+        if (Date.now() - start < 3000)
+            return;
+
+        e_overlay_box.classList.add('fadeout');
+        e_overlay_box.removeEventListener("cancel", cancelListener);
+        e_overlay_box.addEventListener("close", (e) => {
+            e_overlay_box.remove();
+            e_style.remove();
         });
 
-        window.addEventListener("keydown", (event) => {
-            if (event.defaultPrevented || event.key !== "Escape" || exited)
-                return;
-
-            exited = true;
-            e_overlay_box.classList.add('fadeout');
+        setTimeout(() => {
             document.body.style.overflow = old_body_overflow;
-            event.preventDefault();
-            setTimeout(() => e_overlay_box.remove(), 1000);
-        });
+            e_overlay_box.close();
+        }, 600);
+    };
 
-        e_overlay_box.appendChild(e_exit);
-    }, 3000);
+    e_overlay_box.addEventListener("cancel", cancelListener);
+
+    e_exit.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (e_overlay_box.requestClose)
+            e_overlay_box.requestClose();
+        else
+            e_overlay_box.close();
+    });
 })();
