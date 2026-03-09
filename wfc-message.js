@@ -254,6 +254,10 @@
     e_overlay_box.setAttribute('aria-label', messages["wfc-title"]);
     document.body.appendChild(e_overlay_box);
     e_overlay_box.showModal();
+    e_overlay_box.addEventListener("close", (e) => {
+        e_overlay_box.remove();
+        e_style.remove();
+    });
 
     // Wait for the image to load
     // https://stackoverflow.com/a/56341485/12805899, <https://creativecommons.org/licenses/by-sa/4.0/>
@@ -330,10 +334,6 @@
 
         e_overlay_box.classList.add('fadeout');
         e_overlay_box.removeEventListener("cancel", cancelListener);
-        e_overlay_box.addEventListener("close", (e) => {
-            e_overlay_box.remove();
-            e_style.remove();
-        });
 
         setTimeout(() => {
             document.body.style.overflow = old_body_overflow;
