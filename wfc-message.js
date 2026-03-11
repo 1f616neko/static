@@ -2983,6 +2983,7 @@
 
     const messages = {
         "wfc-title": "The Wang Fuk Court fire",
+        "wfc-background-alt": "Firefighters putting out fire on the Warng Fuk Court apartment complex.",
         "wfc-body-text": `<p>
             On 26 November 2025, a large fire broke out at the Wang Fuk Court 
             apartment complex in Hong Kong and burned for two days. 168 lives 
@@ -3221,7 +3222,8 @@
     const e_background_image = document.createElement('div');
     e_background_image.setAttribute('id', 'wfc-background-image');
     e_background_image.setAttribute('role', 'img');
-    e_background_image.setAttribute('alt', 'img');
+    e_background_image.setAttribute('alt', messages["wfc-background-alt"]);
+    e_background_image.setAttribute('aria-label', messages["wfc-background-alt"]);
     e_overlay_box.appendChild(e_background_image);
 
     // Title
